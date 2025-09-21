@@ -1,0 +1,69 @@
+[gd_scene load_steps=9 format=3 uid="uid://cw8w6clmxedi6"]
+
+[ext_resource type="Script" uid="uid://j276ypxap1rt" path="res://player.gd" id="1_g2els"]
+[ext_resource type="Script" uid="uid://bmdostcjydrpc" path="res://player_input.gd" id="2_qhqgy"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_fb1vy"]
+properties/0/path = NodePath(".:player")
+properties/0/spawn = true
+properties/0/replication_mode = 0
+properties/1/path = NodePath(".:position")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:velocity")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+properties/3/path = NodePath(".:rotation")
+properties/3/spawn = true
+properties/3/replication_mode = 1
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_hoavk"]
+properties/0/path = NodePath(".:direction")
+properties/0/spawn = false
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:gun_yaw")
+properties/1/spawn = false
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:gun_pitch")
+properties/2/spawn = false
+properties/2/replication_mode = 1
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_g2els"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_qhqgy"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_g2els"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_g2els"]
+
+[node name="Player" type="CharacterBody3D"]
+script = ExtResource("1_g2els")
+
+[node name="ServerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_fb1vy")
+
+[node name="PlayerInput" type="MultiplayerSynchronizer" parent="."]
+root_path = NodePath(".")
+replication_config = SubResource("SceneReplicationConfig_hoavk")
+script = ExtResource("2_qhqgy")
+
+[node name="TankBodyCollision" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_g2els")
+
+[node name="TankBody" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_qhqgy")
+
+[node name="GunBase" type="Node3D" parent="."]
+
+[node name="GunBaseMesh" type="MeshInstance3D" parent="GunBase"]
+transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 0, 0.7, 0)
+mesh = SubResource("BoxMesh_g2els")
+
+[node name="BarrelPivot" type="Node3D" parent="GunBase"]
+
+[node name="BarrelMesh" type="MeshInstance3D" parent="GunBase/BarrelPivot"]
+transform = Transform3D(0.2, 0, 0, 0, -2.84124e-08, -0.2, 0, 0.65, -8.74228e-09, 0, 0.686677, -0.793921)
+mesh = SubResource("CylinderMesh_g2els")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.40432, 2.04444)
