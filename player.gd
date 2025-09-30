@@ -20,17 +20,13 @@ var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 @onready var input = $PlayerInput
 @onready var gun_base = $GunBase
 @onready var barrel_pivot = $GunBase/BarrelPivot
+@onready var cannonball_scene = preload("res://scenes/CannonBall.tscn")
 
 @export var yaw_speed := 60.0   # deg/sec
 @export var pitch_speed := 30.0 # deg/sec
 @export var min_pitch := -10.0
 @export var max_pitch := 30.0
 var pitch_angle := 0.0
-
-# ---------------------
-# Cannonball
-# ---------------------
-@onready var cannonball_scene = preload("res://scenes/CannonBall.tscn")
 
 # ---------------------
 # Initialization
@@ -103,19 +99,16 @@ func request_shoot():
 # Spawn and launch cannonball
 # ---------------------
 func shoot_cannon():
-	# Instantiate cannonball
-	var cannonball = cannonball_scene.instantiate() as RigidBody3D
-
-	# Add to scene FIRST so global_transform is valid
-	get_tree().current_scene.add_child(cannonball, true)
 
 	# Now compute muzzle position & direction (barrel must be in tree)
 	var muzzle_pos = barrel_pivot.global_transform.origin
 	var direction = -barrel_pivot.global_transform.basis.z.normalized()
+	rpc("spawn_cannonball",muzzle_pos,direction,player)
 
-	# Set global position AFTER adding to tree
+@rpc("authority","call_local")
+func spawn_cannonball(muzzle_pos: Vector3, direction: Vector3, owner_id: int):
+	var cannonball = cannonball_scene.instantiate() as RigidBody3D
+	get_tree().current_scene.add_child(cannonball, true)
 	cannonball.global_transform.origin = muzzle_pos + direction * 1.5
-
-	# Launch projectile
 	if cannonball.has_method("launch"):
 		cannonball.launch(direction, player)
