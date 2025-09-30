@@ -1,17 +1,7 @@
-# Godot 4 cache
+# Godot-specific ignores
+.import/
 .godot/
 
-# Godot 3 cache (if applicable)
-.import/
-
-# Export configs (can be recreated)
-export.cfg
-export_presets.cfg
-
-# OS-specific
+# OS-specific junk
 .DS_Store
 Thumbs.db
-
-# Editor/IDE
-.vscode/
-.idea/
